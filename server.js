@@ -135,7 +135,7 @@ footer a{color:#ffd700}
 @media(max-width:600px){.search-bar{flex-direction:column}.stat-bar{gap:1rem}}
 </style>
 <meta name="google-site-verification" content="xRNmhKcAOHjmX-JmALgRgPwMyuLqU4QXggChDjbLZ60" />
-<meta name="google-site-verification" content="xRNmhKcAOHjmX-JmALgRgPwMyuLqU4QXggChDjbLZ60" />
+
 </head>
 <body>
 ${AD_TOP}
