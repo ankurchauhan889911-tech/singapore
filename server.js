@@ -4,6 +4,7 @@ const { getJobData, getJobSchema, TOTAL_JOBS, jobTitles, companies, singaporeLoc
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const DOMAIN = 'rightwing-productions.up.railway.app';
 
 app.use(compression());
 app.use(express.static(__dirname));
@@ -209,11 +210,11 @@ app.get('/', (req, res) => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "SGNOVA.sg",
-    "url": "https://rightwing-production.up.railway.app",
+    "url": `https://${DOMAIN}`,
     "description": `Singapore's largest job portal with ${TOTAL_JOBS.toLocaleString()} job listings — remote and on-site across the island`,
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://rightwing-production.up.railway.app/jobs?q={search_term_string}",
+      "target": `https://${DOMAIN}/jobs?q={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
   };
@@ -440,7 +441,7 @@ app.get('/sitemap.xml', (req, res) => {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
   for (let i = 1; i <= totalSitemaps; i++) {
-    xml += `\n<sitemap><loc>https://rightwing-production.up.railway.app/sitemap-${i}.xml</loc></sitemap>`;
+    xml += `\n<sitemap><loc>https://${DOMAIN}/sitemap-${i}.xml</loc></sitemap>`;
   }
   xml += `\n</sitemapindex>`;
   res.type('application/xml').send(xml);
@@ -454,7 +455,7 @@ app.get('/sitemap-:num.xml', (req, res) => {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
   for (let i = start; i <= end; i++) {
-    xml += `\n<url><loc>https://rightwing-production.up.railway.app/jobs/${i}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`;
+    xml += `\n<url><loc>https://${DOMAIN}/jobs/${i}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`;
   }
   xml += `\n</urlset>`;
   res.type('application/xml').send(xml);
@@ -509,7 +510,7 @@ app.get('/sitemap', (req, res) => {
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(`User-agent: *
 Allow: /
-Sitemap: https://rightwing-production.up.railway.app/sitemap.xml
+Sitemap: https://${DOMAIN}/sitemap.xml
 Disallow: /api/`);
 });
 
@@ -537,4 +538,5 @@ app.listen(PORT, () => {
   console.log(`📋 ${TOTAL_JOBS.toLocaleString()} job pages ready`);
   console.log(`🏢 ${companies.length} companies hiring in Singapore`);
   console.log(`📍 ${singaporeLocations.length} locations across Singapore`);
+  console.log(`🌐 Sitemaps available at: https://${DOMAIN}/sitemap.xml`);
 });
