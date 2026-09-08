@@ -43,6 +43,7 @@ const AD_BOTTOM = `
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const JOBS_PER_PAGE = 20;
+const TOTAL_PAGES = Math.ceil(TOTAL_JOBS / JOBS_PER_PAGE);
 
 function renderHTML({ title, meta, bodyContent, schema }) {
   return `<!DOCTYPE html>
@@ -144,7 +145,6 @@ ${AD_TOP}
     <a href="/sitemap">Sitemap</a>
   </div>
 </nav>
-<!-- Center Ad -->
 <div style="display:flex; justify-content:center; margin:20px 0;">
   <div>
     <script>
@@ -162,7 +162,7 @@ ${AD_TOP}
 ${bodyContent}
 ${AD_BOTTOM}
 <footer>
-  &copy; 2025 SGNOVA.sg — <strong>100,000 Jobs</strong> in Singapore |
+  &copy; 2025 SGNOVA.sg — <strong>${TOTAL_JOBS.toLocaleString()} Jobs</strong> in Singapore |
   <a href="/jobs">Browse All</a> · <a href="/jobs?type=remote">Remote Jobs</a> · <a href="/sitemap">Sitemap</a>
 </footer>
 <script>
@@ -176,7 +176,7 @@ function openApply(title){
 
 // ── HOME PAGE ─────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  const featuredIds = [1, 50001, 2, 50002, 3, 50003, 10000, 60000];
+  const featuredIds = [1, 500001, 2, 500002, 3, 500003, 100000, 600000];
   const featuredJobs = featuredIds.map(id => getJobData(id));
 
   const cards = featuredJobs.map(job => `
@@ -210,7 +210,7 @@ app.get('/', (req, res) => {
     "@type": "WebSite",
     "name": "SGNOVA.sg",
     "url": "https://rightwing-production.up.railway.app",
-    "description": "Singapore's largest job portal with 100,000 job listings — remote and on-site across the island",
+    "description": `Singapore's largest job portal with ${TOTAL_JOBS.toLocaleString()} job listings — remote and on-site across the island`,
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://rightwing-production.up.railway.app/jobs?q={search_term_string}",
@@ -221,7 +221,7 @@ app.get('/', (req, res) => {
   const body = `
 <div class="hero">
   <h1>Find Your Dream Job in <span class="accent">Singapore</span></h1>
-  <p>100,000 verified job listings — remote & on-site — across Singapore</p>
+  <p>${TOTAL_JOBS.toLocaleString()} verified job listings — remote & on-site — across Singapore</p>
   <form action="/jobs" method="get" style="display:flex;gap:.75rem;max-width:580px;margin:0 auto;flex-wrap:wrap">
     <input name="q" type="text" placeholder="Job title, skill, or company..." style="flex:2;min-width:200px;padding:.7rem 1rem;border-radius:8px;border:none;font-size:.95rem"/>
     <select name="location" style="flex:1;min-width:140px;padding:.7rem;border-radius:8px;border:none;font-size:.85rem">
@@ -236,29 +236,29 @@ app.get('/', (req, res) => {
     <button type="submit" style="padding:.7rem 1.5rem;background:#ffd700;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;cursor:pointer">Search →</button>
   </form>
   <div class="stat-bar">
-    <div class="stat"><strong>100,000</strong><span>Total Jobs</span></div>
-    <div class="stat"><strong>50,000</strong><span>Remote Jobs</span></div>
-    <div class="stat"><strong>50,000</strong><span>On-site Jobs</span></div>
-    <div class="stat"><strong>500+</strong><span>Companies</span></div>
-    <div class="stat"><strong>50+</strong><span>Locations</span></div>
+    <div class="stat"><strong>${TOTAL_JOBS.toLocaleString()}</strong><span>Total Jobs</span></div>
+    <div class="stat"><strong>${(TOTAL_JOBS/2).toLocaleString()}</strong><span>Remote Jobs</span></div>
+    <div class="stat"><strong>${(TOTAL_JOBS/2).toLocaleString()}</strong><span>On-site Jobs</span></div>
+    <div class="stat"><strong>${companies.length}+</strong><span>Companies</span></div>
+    <div class="stat"><strong>${singaporeLocations.length}+</strong><span>Locations</span></div>
   </div>
 </div>
 
 <div class="container">
   <div class="info-box">
-    🇸🇬 Singapore's most comprehensive job board — browse <strong>50,000 remote jobs</strong> and <strong>50,000 on-site jobs</strong> across all industries.
+    🇸🇬 Singapore's most comprehensive job board — browse <strong>${(TOTAL_JOBS/2).toLocaleString()} remote jobs</strong> and <strong>${(TOTAL_JOBS/2).toLocaleString()} on-site jobs</strong> across all industries.
   </div>
   ${AD_MIDDLE}
   <h2 style="margin-bottom:1rem;font-size:1.2rem">Featured Jobs</h2>
   <div class="page-grid">${cards}</div>
   <div style="text-align:center;margin-top:2rem">
-    <a href="/jobs" style="display:inline-block;padding:.85rem 2.5rem;background:#1a1a2e;color:#fff;border-radius:10px;font-weight:700">Browse All 100,000 Jobs →</a>
+    <a href="/jobs" style="display:inline-block;padding:.85rem 2.5rem;background:#1a1a2e;color:#fff;border-radius:10px;font-weight:700">Browse All ${TOTAL_JOBS.toLocaleString()} Jobs →</a>
   </div>
 </div>`;
 
   res.send(renderHTML({
-    title: 'SGNOVA.sg — 100,000 Jobs in Singapore | Remote & On-site',
-    meta: 'Find your next job in Singapore. 100,000 verified listings — 50,000 remote and 50,000 on-site jobs across all industries.',
+    title: `SGNOVA.sg — ${TOTAL_JOBS.toLocaleString()} Jobs in Singapore | Remote & On-site`,
+    meta: `Find your next job in Singapore. ${TOTAL_JOBS.toLocaleString()} verified listings — ${(TOTAL_JOBS/2).toLocaleString()} remote and ${(TOTAL_JOBS/2).toLocaleString()} on-site jobs across all industries.`,
     bodyContent: body,
     schema: websiteSchema
   }));
@@ -274,9 +274,9 @@ app.get('/jobs', (req, res) => {
   let jobIds = [];
   if (typeFilter === 'remote') {
     const start = (page - 1) * JOBS_PER_PAGE + 1;
-    for (let i = start; i < start + JOBS_PER_PAGE && i <= 50000; i++) jobIds.push(i);
+    for (let i = start; i < start + JOBS_PER_PAGE && i <= TOTAL_JOBS / 2; i++) jobIds.push(i);
   } else if (typeFilter === 'onsite') {
-    const start = 50000 + (page - 1) * JOBS_PER_PAGE + 1;
+    const start = (TOTAL_JOBS / 2) + (page - 1) * JOBS_PER_PAGE + 1;
     for (let i = start; i < start + JOBS_PER_PAGE && i <= TOTAL_JOBS; i++) jobIds.push(i);
   } else {
     const start = (page - 1) * JOBS_PER_PAGE + 1;
@@ -328,13 +328,13 @@ app.get('/jobs', (req, res) => {
 
   const body = `
 <div class="hero" style="padding:1.75rem 1.5rem">
-  <h1 style="font-size:1.8rem">Browse <span class="accent">100,000 Jobs</span> in Singapore</h1>
+  <h1 style="font-size:1.8rem">Browse <span class="accent">${TOTAL_JOBS.toLocaleString()} Jobs</span> in Singapore</h1>
   <p>Showing page ${page.toLocaleString()} of ${totalPages.toLocaleString()}</p>
 </div>
 <div class="filter-row">
-  <a href="/jobs"><span class="filter-chip ${typeFilter==='all'?'active':''}">All Jobs (100,000)</span></a>
-  <a href="/jobs?type=remote"><span class="filter-chip ${typeFilter==='remote'?'active':''}">🌐 Remote (50,000)</span></a>
-  <a href="/jobs?type=onsite"><span class="filter-chip ${typeFilter==='onsite'?'active':''}">🏢 On-site (50,000)</span></a>
+  <a href="/jobs"><span class="filter-chip ${typeFilter==='all'?'active':''}">All Jobs (${TOTAL_JOBS.toLocaleString()})</span></a>
+  <a href="/jobs?type=remote"><span class="filter-chip ${typeFilter==='remote'?'active':''}">🌐 Remote (${(TOTAL_JOBS/2).toLocaleString()})</span></a>
+  <a href="/jobs?type=onsite"><span class="filter-chip ${typeFilter==='onsite'?'active':''}">🏢 On-site (${(TOTAL_JOBS/2).toLocaleString()})</span></a>
 </div>
 <div class="container">
   <div class="page-grid">${cards}</div>
@@ -356,7 +356,7 @@ app.get('/jobs/:id', (req, res) => {
     return res.status(404).send(renderHTML({
       title: 'Job Not Found | SGNOVA.sg',
       meta: 'This job listing was not found.',
-      bodyContent: `<div class="container" style="text-align:center;padding:4rem 1.5rem"><h1>404 — Job Not Found</h1><p style="margin:1rem 0 2rem">This job may have been filled or removed.</p><a href="/jobs" style="color:#d62828">← Browse All Jobs</a></div>`,
+      bodyContent: `<div class="container" style="text-align:center;padding:4rem 1.5rem"><h1>404 — Job Not Found</h1><p style="margin:1rem 0 2rem">This job may have been filled or removed.</p><a href="/jobs" style="color:#d62828">← Browse All ${TOTAL_JOBS.toLocaleString()} Jobs</a></div>`,
       schema: null
     }));
   }
@@ -421,7 +421,7 @@ app.get('/jobs/:id', (req, res) => {
     <div class="page-grid">${relatedCards}</div>
   </div>
   <div style="text-align:center;margin-top:1.5rem">
-    <a href="/jobs" style="color:#d62828;font-weight:600">← Browse All 100,000 Jobs</a>
+    <a href="/jobs" style="color:#d62828;font-weight:600">← Browse All ${TOTAL_JOBS.toLocaleString()} Jobs</a>
   </div>
 </div>`;
 
@@ -435,7 +435,8 @@ app.get('/jobs/:id', (req, res) => {
 
 // ── SITEMAP INDEX ─────────────────────────────────────────────────────────────
 app.get('/sitemap.xml', (req, res) => {
-  const totalSitemaps = 100;
+  // For 1M jobs, we need 1000 sitemaps (1000 jobs per sitemap)
+  const totalSitemaps = 1000;
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
   for (let i = 1; i <= totalSitemaps; i++) {
@@ -447,7 +448,7 @@ app.get('/sitemap.xml', (req, res) => {
 
 app.get('/sitemap-:num.xml', (req, res) => {
   const num = parseInt(req.params.num);
-  if (!num || num < 1 || num > 100) return res.status(404).send('Not found');
+  if (!num || num < 1 || num > 1000) return res.status(404).send('Not found');
   const start = (num - 1) * 1000 + 1;
   const end = Math.min(num * 1000, TOTAL_JOBS);
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -464,15 +465,15 @@ app.get('/sitemap', (req, res) => {
   const body = `
 <div class="container">
   <h1 style="margin-bottom:1rem">Sitemap — SGNOVA.sg</h1>
-  <div class="info-box">📌 100,000 individual job pages + XML sitemaps for all search engines</div>
+  <div class="info-box">📌 ${TOTAL_JOBS.toLocaleString()} individual job pages + XML sitemaps for all search engines</div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem">
     <div class="job-card">
       <div class="card-title">Main Pages</div>
       <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;font-size:.88rem">
         <a href="/" style="color:#d62828">🏠 Home</a>
-        <a href="/jobs" style="color:#d62828">📋 All Jobs (100,000)</a>
-        <a href="/jobs?type=remote" style="color:#d62828">🌐 Remote Jobs (50,000)</a>
-        <a href="/jobs?type=onsite" style="color:#d62828">🏢 On-site Jobs (50,000)</a>
+        <a href="/jobs" style="color:#d62828">📋 All Jobs (${TOTAL_JOBS.toLocaleString()})</a>
+        <a href="/jobs?type=remote" style="color:#d62828">🌐 Remote Jobs (${(TOTAL_JOBS/2).toLocaleString()})</a>
+        <a href="/jobs?type=onsite" style="color:#d62828">🏢 On-site Jobs (${(TOTAL_JOBS/2).toLocaleString()})</a>
       </div>
     </div>
     <div class="job-card">
@@ -481,16 +482,16 @@ app.get('/sitemap', (req, res) => {
         <a href="/sitemap.xml" style="color:#d62828">📄 Sitemap Index</a>
         <a href="/sitemap-1.xml" style="color:#d62828">📄 Sitemap 1 (Jobs 1–1,000)</a>
         <a href="/sitemap-2.xml" style="color:#d62828">📄 Sitemap 2 (Jobs 1,001–2,000)</a>
-        <span style="color:#888">… 100 sitemap files total</span>
+        <span style="color:#888">… 1,000 sitemap files total</span>
       </div>
     </div>
     <div class="job-card">
       <div class="card-title">Job Pages Range</div>
       <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;font-size:.88rem">
         <a href="/jobs/1" style="color:#d62828">Job #1 (First Remote Job)</a>
-        <a href="/jobs/50000" style="color:#d62828">Job #50,000 (Last Remote Job)</a>
-        <a href="/jobs/50001" style="color:#d62828">Job #50,001 (First On-site Job)</a>
-        <a href="/jobs/100000" style="color:#d62828">Job #100,000 (Last On-site Job)</a>
+        <a href="/jobs/${TOTAL_JOBS/2}" style="color:#d62828">Job #${(TOTAL_JOBS/2).toLocaleString()} (Last Remote Job)</a>
+        <a href="/jobs/${TOTAL_JOBS/2 + 1}" style="color:#d62828">Job #${(TOTAL_JOBS/2 + 1).toLocaleString()} (First On-site Job)</a>
+        <a href="/jobs/${TOTAL_JOBS}" style="color:#d62828">Job #${TOTAL_JOBS.toLocaleString()} (Last On-site Job)</a>
       </div>
     </div>
   </div>
@@ -498,7 +499,7 @@ app.get('/sitemap', (req, res) => {
 
   res.send(renderHTML({
     title: 'Sitemap | SGNOVA.sg',
-    meta: 'Complete sitemap of SGNOVA.sg with 100,000 job listings across Singapore.',
+    meta: `Complete sitemap of SGNOVA.sg with ${TOTAL_JOBS.toLocaleString()} job listings across Singapore.`,
     bodyContent: body,
     schema: null
   }));
