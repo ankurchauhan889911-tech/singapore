@@ -134,6 +134,7 @@ footer a{color:#ffd700}
 .success-msg{display:none;text-align:center;padding:1rem;color:#2e7d32;font-weight:600}
 @media(max-width:600px){.search-bar{flex-direction:column}.stat-bar{gap:1rem}}
 </style>
+<meta name="google-site-verification" content="xRNmhKcAOHjmX-JmALgRgPwMyuLqU4QXggChDjbLZ60" />
 </head>
 <body>
 ${AD_TOP}
