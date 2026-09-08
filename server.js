@@ -4,7 +4,7 @@ const { getJobData, getJobSchema, TOTAL_JOBS, jobTitles, companies, singaporeLoc
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DOMAIN = 'rightwing-productions.up.railway.app';
+const DOMAIN = 'rightwing-productionsdf.up.railway.app';
 
 app.use(compression());
 app.use(express.static(__dirname));
